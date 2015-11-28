@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MipSim
+﻿namespace MipSim.Instructions
 {
     abstract class Instruction
     {
-        protected string _instrString;
-        protected int _relativeClock;
+        protected string InstrString;
 
-        public int RelativeClock
-        {
-            get { return _relativeClock; }
-        }
+        public int RelativeClock { get; private set; }
 
-        public Instruction(string instr)
+        protected Instruction(string instr)
         {
-            this._instrString = instr;
-            this._relativeClock = 0;
+            InstrString = instr;
+            RelativeClock = 0;
         }
 
         public void AdvanceClock()
         {
-            switch(++this._relativeClock)
+            switch (++RelativeClock)
             {
                 case 1:
                     Decode();
@@ -54,7 +44,7 @@ namespace MipSim
 
         public string GetFetch()
         {
-            return _instrString;
+            return InstrString;
         }
 
         public abstract string GetDecode();
@@ -63,7 +53,7 @@ namespace MipSim
 
         public abstract string GetMem();
 
-        public abstract string GetWB();
+        public abstract string GetWriteback();
 
         public abstract string GetInstructionType();
     }

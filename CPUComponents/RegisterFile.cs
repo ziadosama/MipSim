@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MipSim
+namespace MipSim.CPUComponents
 {
     public class RegisterFile
     {
-        private static int[] _registers;
+        private static readonly int[] Registers;
 
         static RegisterFile()
         {
-            _registers = new int[32];
+            Registers = new int[32];
         }
 
         public static int Read(int register)
@@ -20,7 +16,7 @@ namespace MipSim
             if (register < 0 || register > 31)
                 throw new IndexOutOfRangeException();
 
-            return _registers[register];
+            return Registers[register];
         }
 
         public static void Write(int register, int val)
@@ -28,7 +24,7 @@ namespace MipSim
             if (register < 0 || register > 31)
                 throw new IndexOutOfRangeException();
 
-            _registers[register] = val;
+            Registers[register] = val;
         }
     }
 }

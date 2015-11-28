@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MipSim.CPUComponents;
 
-namespace MipSim
+namespace MipSim.Instructions
 {
     class Add : Instruction
     {
-        private int _rd;
-        private int _rs;
-        private int _rt;
+        private readonly int _rd;
+        private readonly int _rs;
+        private readonly int _rt;
 
         private int _op1;
         private int _op2;
@@ -19,27 +15,29 @@ namespace MipSim
 
         public Add(string instr, int rd, int rs, int rt) : base(instr)
         {
-            this._rd = rd;
-            this._rs = rs;
-            this._rt = rt;
+            _rd = rd;
+            _rs = rs;
+            _rt = rt;
         }
 
         public override void Decode()
         {
-            this._op1 = RegisterFile.Read(this._rs);
-            this._op2 = RegisterFile.Read(this._rt);
+            _op1 = RegisterFile.Read(_rs);
+            _op2 = RegisterFile.Read(_rt);
         }
 
         public override void Execute()
         {
-            this._result = this._op1 + this._op2;
+            _result = _op1 + _op2;
         }
 
-        public override void MemoryOp() { }
+        public override void MemoryOp()
+        {
+        }
 
         public override void WriteBack()
         {
-            RegisterFile.Write(this._rd, this._result);
+            RegisterFile.Write(_rd, _result);
         }
 
         public override string GetDecode()
@@ -49,7 +47,7 @@ namespace MipSim
 
         public override string GetExecute()
         {
-            return string.Format("Add {0} + {1} = {2}", this._op1, this._op2, this._result);
+            return string.Format("Add {0} + {1} = {2}", _op1, _op2, _result);
         }
 
         public override string GetMem()
@@ -57,9 +55,9 @@ namespace MipSim
             return "None";
         }
 
-        public override string GetWB()
+        public override string GetWriteback()
         {
-            return string.Format("Register ${0} <= {1}", this._rd, this._result);
+            return string.Format("Register ${0} <= {1}", _rd, _result);
         }
 
         public override string GetInstructionType()
