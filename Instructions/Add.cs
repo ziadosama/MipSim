@@ -1,7 +1,4 @@
-﻿using System;
-using MipSim.CPUComponents;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
     class Add : Instruction
     {

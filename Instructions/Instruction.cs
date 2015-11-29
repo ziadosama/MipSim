@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
     public abstract class Instruction
     {
