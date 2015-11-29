@@ -1,4 +1,5 @@
-﻿using MipSim.CPUComponents;
+﻿using System;
+using MipSim.CPUComponents;
 
 namespace MipSim.Instructions
 {
@@ -13,7 +14,8 @@ namespace MipSim.Instructions
 
         private int _result;
 
-        public Add(string instr, int rd, int rs, int rt) : base(instr)
+        public Add(string instr, int instructionNumber, int rd, int rs, int rt)
+            : base(instr, instructionNumber)
         {
             _rd = rd;
             _rs = rs;
@@ -22,22 +24,46 @@ namespace MipSim.Instructions
 
         public override void Decode()
         {
-            _op1 = RegisterFile.Read(_rs);
-            _op2 = RegisterFile.Read(_rt);
+            _op1 = CPU.RegRead(_rs);
+            _op2 = CPU.RegRead(_rt);
         }
 
-        public override void Execute()
+        public override bool Execute()
         {
+            WriteAwaiting = _rd;
+
+            //Some previous instruction has not written value to register yet
+            if (!CPU.IsRegisterReady(_rs))
+            {
+                //Check if value has been forwarded
+                if (CPU.IsRegisterForwarded(_rs))
+                    _op1 = CPU.GetForwardedRegister(_rs);
+                else
+                    return false; //Else stall
+            }
+
+            if (!CPU.IsRegisterReady(_rt))
+            {
+                if (CPU.IsRegisterForwarded(_rt))
+                    _op2 = CPU.GetForwardedRegister(_rt);
+                else
+                    return false; //Stall
+            }
+
             _result = _op1 + _op2;
+
+            return true;
         }
 
         public override void MemoryOp()
         {
+            //Forwarded data is available only AFTER the execute stage
+            ForwardedRegister = _result;
         }
 
         public override void WriteBack()
         {
-            RegisterFile.Write(_rd, _result);
+            CPU.RegWrite(_rd, _result);
         }
 
         public override string GetDecode()
@@ -63,6 +89,16 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "Add";
+        }
+
+        public override bool IsJumpTaken()
+        {
+            return false;
+        }
+
+        public override JumpData GetJumpData()
+        {
+            return null;
         }
     }
 }
