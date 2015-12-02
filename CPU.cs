@@ -10,7 +10,7 @@ namespace MipSim
         private static readonly GenericMemory DataMemory;
         private static readonly ProgramCounter PC;
         private static readonly InstructionMemory Instructions;
-        private static readonly Procedure_Stack Stack;/////////////////////////////////
+        private static readonly ProcedureStack Stack;
 
         private static int _clockCycle;
         private static bool _isStalled;
@@ -25,6 +25,8 @@ namespace MipSim
             DataMemory = new GenericMemory(16);
             PC = new ProgramCounter();
             Instructions = new InstructionMemory();
+            Stack = new ProcedureStack();
+
             IsReady = false;
 
             _clockCycle = 0;
@@ -100,17 +102,20 @@ namespace MipSim
                 if (instruction.ForwardedRegister.HasValue)
                     ForwardedRegisters[instruction.WriteAwaiting] = instruction.ForwardedRegister.Value;
 
-                if (instruction.IsJumpTaken() && !isJumpTaken)
+                if (instruction.JumpData != null && !isJumpTaken)
                 {
-                    var jumpData = instruction.GetJumpData();
+                    var jumpData = instruction.JumpData;
 
-                    if (jumpData.Type == Instruction.JumpType.Branch)
-                        PC.Advance(jumpData.Address);
-                    else if (jumpData.Type == Instruction.JumpType.Jump)
-                        PC.Jump(jumpData.Address);
+                    if (jumpData.IsJumpTaken)
+                    {
+                        if (jumpData.Type == JumpType.Branch)
+                            PC.Advance(jumpData.Address);
+                        else if (jumpData.Type == JumpType.Jump)
+                            PC.Jump(jumpData.Address);
 
-                    isJumpTaken = true;
-                    jumpIndex = i;
+                        isJumpTaken = true;
+                        jumpIndex = i;
+                    }
                 }
             }
 
@@ -171,12 +176,12 @@ namespace MipSim
 
         public static void StackPush(int address)
         {
-            Stack.push(address);
+            Stack.Push(address);
         }
 
         public static int StackPop()
         {
-            return Stack.pop();
+            return Stack.Pop();
         }
     }
 }

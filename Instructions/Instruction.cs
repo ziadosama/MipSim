@@ -17,6 +17,7 @@
             RelativeClock = -1;
             WriteAwaiting = -1;
             ForwardedRegister = null;
+            JumpData = null;
         }
 
         public void Initialize(int clockCycle)
@@ -25,6 +26,8 @@
             WriteAwaiting = -1;
             ForwardedRegister = null;
             ClockCycle = clockCycle;
+            if (JumpData != null)
+                JumpData.IsJumpTaken = false;
         }
 
         //Returns false if needs to stall and true otherwise
@@ -87,24 +90,10 @@
 
         public abstract string GetInstructionType();
 
-        public abstract bool IsJumpTaken();
-
-        public abstract JumpData GetJumpData();
+        public JumpData JumpData { get; protected set; }
 
         public int WriteAwaiting { get; protected set; }
 
         public int? ForwardedRegister { get; protected set; }
-
-        public enum JumpType
-        {
-            Jump,
-            Branch
-        }
-
-        public class JumpData
-        {
-            public JumpType Type;
-            public int Address;
-        }
     }
 }

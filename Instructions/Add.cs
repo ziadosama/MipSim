@@ -61,6 +61,10 @@
         public override void WriteBack()
         {
             CPU.RegWrite(_rd, _result);
+
+            //At this point we have written the value to the register in first half of
+            //the clock cycle so it should available from the register file directly
+            ClearAwaits();
         }
 
         public override string GetDecode()
@@ -86,16 +90,6 @@
         public override string GetInstructionType()
         {
             return "Add";
-        }
-
-        public override bool IsJumpTaken()
-        {
-            return false;
-        }
-
-        public override JumpData GetJumpData()
-        {
-            return null;
         }
     }
 }

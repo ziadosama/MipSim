@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
-    class Return_Procedure : Instruction
+    class ReturnProcedure : Instruction
     {
-        private JumpData _jumpData;
-        public Return_Procedure(string instr, int instructionNumber)
+        public ReturnProcedure(string instr, int instructionNumber)
             : base (instr, instructionNumber)
         {
+            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            _jumpData.Address = CPU.StackPop();
-            _jumpData.Type = JumpType.Jump;
+            JumpData.Address = CPU.StackPop();
+            JumpData.IsJumpTaken = true;
         }
 
         public override bool Execute()
@@ -27,17 +21,15 @@ namespace MipSim.Instructions
 
         public override void MemoryOp()
         {
-            return;
         }
 
         public override void WriteBack()
         {
-            return;
         }
 
         public override string GetDecode()
         {
-            return string.Format("RP Instruction: Address => {0}", _jumpData.Address);
+            return string.Format("RP Instruction: Address => {0}", JumpData.Address);
         }
 
         public override string GetExecute()
@@ -58,16 +50,6 @@ namespace MipSim.Instructions
         public override string GetInstructionType()
         {
             return "RP";
-        }
-
-        public override bool IsJumpTaken()
-        {
-            return true;
-        }
-
-        public override JumpData GetJumpData()
-        {
-            return _jumpData;
         }
     }
 }

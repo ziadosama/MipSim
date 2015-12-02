@@ -1,49 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
     class JR : Instruction
     {
         private readonly int _rs;
 
-        private JumpData _jumpData;
-
-
         public JR (string instr, int instructionNumber, int rs)
             : base (instr, instructionNumber)
         {
             _rs = rs;
-            _jumpData.Type = JumpType.Jump;
+            JumpData = new JumpData { Type = JumpType.Jump, IsJumpTaken = false };
         }
 
         public override void Decode()
         {
-            //Jump address is stored in rs register
-            _jumpData.Address = CPU.RegRead(_rs);
+            JumpData.Address = CPU.RegRead(_rs);
+            JumpData.IsJumpTaken = true;
         }
 
         public override bool Execute()
         {
-            return true; //(?)
+            return true;
         }
 
         public override void MemoryOp()
         {
-            return;
         }
 
         public override void WriteBack()
         {
-            return;
         }
 
         public override string GetDecode()
         {
-            return string.Format("JR Instruction: rs => ${0}", _rs);
+            return string.Format("JR Instruction: rs => ${0} = {1}", _rs, JumpData.Address);
         }
 
         public override string GetExecute()
@@ -65,16 +54,5 @@ namespace MipSim.Instructions
         {
             return "JR";
         }
-
-        public override bool IsJumpTaken()
-        {
-            return true;
-        }
-
-        public override JumpData GetJumpData()
-        {
-            return _jumpData;
-        }
-
     }
 }

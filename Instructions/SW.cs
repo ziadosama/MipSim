@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MipSim.Instructions
+﻿namespace MipSim.Instructions
 {
-    class LW : Instruction
+    class SW : Instruction
     {
         private readonly int _rs;
         private readonly int _rt;
@@ -14,27 +8,24 @@ namespace MipSim.Instructions
 
         private int _base;
 
-        private int _result;
+        private int _data;  //Data read from register Rt
 
-        public LW(string instr, int instructionNumber, int rt, int offset, int rs) 
+        public SW(string instr, int instructionNumber, int rt, int offset, int rs) 
             : base(instr, instructionNumber)
         {
             _rs = rs;
             _rt = rt;
             _offset = offset;
-
         }
 
         public override void Decode()
         {
             _base = CPU.RegRead(_rs);
+            _data = CPU.RegRead(_rt);
         }
 
         public override bool Execute()
         {
-            WriteAwaiting = _rt;
-
-
             if (!CPU.IsRegisterReady(_rs))
             {
                 //Check if value has been forwarded
@@ -44,56 +35,50 @@ namespace MipSim.Instructions
                     return false; //Else stall
             }
 
-            
+            if (!CPU.IsRegisterReady(_rt))
+            {
+                //Check if value has been forwarded
+                if (CPU.IsRegisterForwarded(_rt))
+                    _data = CPU.GetForwardedRegister(_rt);
+                else
+                    return false; //Else stall
+            }
 
             return true;
         }
 
         public override void MemoryOp()
         {
-            _result = CPU.Load(_base + _offset);
+            CPU.Store((_base + _offset), _data);
         }
 
         public override void WriteBack()
         {
-            ForwardedRegister = _result;
-
-            CPU.RegWrite(_rt, _result);
         }
 
         public override string GetDecode()
         {
-            return string.Format("LW Instruction: rt => ${0}, offset => {1}, rs => ${2}", _rt, _offset, _rs);
+            return string.Format("SW Instruction: rt => ${0}, offset => {1}, rs => ${2}", _rt, _offset, _rs);
         }
 
         public override string GetExecute()
         {
-            return string.Format("LW Address -> {0} + Offset -> {1}", _base, _offset);
+            return string.Format("SW Address -> {0} + Offset -> {1}", _base, _offset);
         }
 
         public override string GetMem()
         {
-            return string.Format("Memory access result = {0}", _result);
+            return string.Format("Value written in memory = {0}", _data);
         }
 
         public override string GetWriteback()
         {
-            return string.Format("Register ${0} <= {1}", _rt, _result);
+            return "None";
         }
 
         public override string GetInstructionType()
         {
-            return "LW";
-        }
-
-        public override bool IsJumpTaken()
-        {
-            return false;
-        }
-
-        public override JumpData GetJumpData()
-        {
-            return null;
+            return "SW";
         }
     }
 }
