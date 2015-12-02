@@ -56,10 +56,16 @@
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Instructions\Instruction.cs" />
+    <Compile Include="JR.cs" />
+    <Compile Include="Jump_procedure.cs" />
+    <Compile Include="LW.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserException.cs" />
+    <Compile Include="Procedure_Stack.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Return_Procedure.cs" />
+    <Compile Include="SW.cs" />
     <EmbeddedResource Include="GUI.resx">
       <DependentUpon>GUI.cs</DependentUpon>
     </EmbeddedResource>

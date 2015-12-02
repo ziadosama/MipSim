@@ -10,6 +10,7 @@ namespace MipSim
         private static readonly GenericMemory DataMemory;
         private static readonly ProgramCounter PC;
         private static readonly InstructionMemory Instructions;
+        private static readonly Procedure_Stack Stack;/////////////////////////////////
 
         private static int _clockCycle;
         private static bool _isStalled;
@@ -166,6 +167,16 @@ namespace MipSim
         public static int GetForwardedRegister(int register)
         {
             return ForwardedRegisters[register];
+        }
+
+        public static void StackPush(int address)
+        {
+            Stack.push(address);
+        }
+
+        public static int StackPop()
+        {
+            return Stack.pop();
         }
     }
 }
